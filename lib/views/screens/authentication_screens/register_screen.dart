@@ -12,6 +12,7 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
   final AuthController _authController = AuthController();
   // form fields
   late String email;
@@ -21,6 +22,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late String city;
   late String birthDate;
   bool _obscurePassword = true;
+  
+  // Daftar domain email yang diizinkan
+  final List<String> allowedEmailDomains = [
+    'gmail.com',
+    'yahoo.com',
+    'outlook.com',
+    'hotmail.com',
+    'icloud.com',
+  ];
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    // Clean up the controller when the widget is disposed.
+    super.dispose();
+  }
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+
+    final email = value.trim();
+    // cek format email terlebih dahulu
+    if (!email.contains('@')) {
+      return 'Please enter a valid email address with @ domain';
+    }
+
+    // ambil bagian domain dari email setelah '@'
+    final parts = email.split('@');
+    if (parts.length != 2) {
+      return 'Email tidak memiliki domain';
+    }
+
+    final domain = parts.last.toLowerCase();
+    // Cek apakah domain termasuk yang diizinkan
+    if (!allowedEmailDomains.contains(domain)) {
+      return 'Valid domain gmail.com, yahoo.com, atau hotmail.com';
+    }
+
+    return null; // valid
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your birth date';
                       }
-                      if (!RegExp(
-                        r'^\d{4}-\d{2}-\d{2}$',
-                      ).hasMatch(value)) {
+                      if (!RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(value)) {
                         return 'Please enter a valid date in Tahun-Bulan-Tanggal format';
                       }
                       // Add more validation logic if needed
@@ -174,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                 ),
-                
+
                 // input state and city
                 SizedBox(height: 10),
                 Row(
@@ -280,10 +321,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                // Tampilan untuk input email
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextFormField(
+                    controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
                     autocorrect: false,
@@ -320,18 +361,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onChanged: (value) {
                       email = value;
                     },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(
-                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email address with @ domain';
-                      }
-                      // Add more validation logic if needed
-                      return null;
-                    },
+                    validator: validateEmail,
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Please enter your email';
+                    //   }
+                    //   if (!RegExp(
+                    //     r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}"
+                    //     r"[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+                    //   ).hasMatch(value)) {
+                    //     return 'Please enter a valid email address with @ domain';
+                    //   }
+                    //   // Add more validation logic if needed
+                    //   return null;
+                    // },
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -374,7 +417,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: const Color(0xFF6200EE),
                         ),
                         onPressed: () => setState(
@@ -402,7 +447,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
-                      onPressed: () async{
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           // Proses Register
                           await _authController.signUpUsers(
@@ -415,6 +460,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             birthDate: birthDate,
                           );
                         }
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginScreen(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6200EE),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:store_app/controllers/auth_controller.dart';
 import 'package:store_app/views/screens/authentication_screens/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,11 +12,44 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final AuthController _authController = AuthController();
+  late String email;
+  late String password;
   bool _obscurePassword = true;
-  // final AuthController _authController = AuthController();
-  // late String email;
-  // late String fullName;
-  // late String password;
+
+  // Daftar domain email yang diizinkan
+  final List<String> allowedEmailDomains = [
+    'gmail.com',
+    'yahoo.com',
+    'outlook.com',
+    'hotmail.com',
+    'icloud.com',
+  ];
+  @override
+  void dispose() {
+    _emailController.dispose();
+    // Clean up the controller when the widget is disposed.
+    super.dispose();
+  }
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your email';
+    }
+    // Memisahkan email menjadi bagian lokal dan domain
+    final parts = value.split('@');
+    if (parts.length != 2) {
+      return 'Please enter a valid email address with @ domain';
+    }
+    final domain = parts.last.toLowerCase();
+    // Cek apakah domain termasuk yang diizinkan
+    if (!allowedEmailDomains.contains(domain)) {
+      return 'Valid domain gmail.com, yahoo.com, atau hotmail.com';
+    }
+ 
+    return null; // valid
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,21 +136,25 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Color(0xFF6200EE),
                       ),
                     ),
-                    // onChanged: (value) {
-                    //   email = value;
-                    // },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(
-                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                      ).hasMatch(value)) {
-                        return 'Please enter a valid email address with @ domain';
-                      }
-                      // Add more validation logic if needed
-                      return null;
+                    // Menghubungkan input email ke variabel email
+                    onChanged: (value) {
+                      email = value;
                     },
+                    validator: validateEmail,
+
+                    // Validasi input email
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Please enter your email';
+                    //   }
+                    //   if (!RegExp(
+                    //     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                    //   ).hasMatch(value)) {
+                    //     return 'Please enter a valid email address with @ domain';
+                    //   }
+                    //   // Add more validation logic if needed
+                    //   return null;
+                    // },
                   ),
                 ),
                 // Tampilan untuk input Full Name and Password
@@ -178,13 +216,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               : Icons.visibility_off,
                           color: const Color(0xFF6200EE),
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword,
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
                         ),
                       ),
                     ),
-                    // onChanged: (value) {
-                    //   password = value;
-                    // },
+                    // Menghubungkan input password ke variabel password
+                    onChanged: (value) {
+                      password = value;
+                    },
+
+                    // Validasi input password
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your password';
@@ -197,23 +239,38 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 ),
-                // Tombol untuk login
+                // BAGIAN TEXT BUTTON LUPA PASSWORD
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Navigate to forgot password screen
+                    },
+                    child: Text(
+                      'Forgot Password?',
+                      style: GoogleFonts.getFont(
+                        'Nunito Sans',
+                        color: const Color(0xFF6200EE),
+                        fontSize: 12,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ),
+                // TOMBOL UNTUK LOGIN/SIGN IN
                 if (MediaQuery.of(context).viewInsets.bottom == 0)
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
                       // Proses login
-                      onPressed: () {
+                      onPressed: () async{
                         if (_formKey.currentState!.validate()) {
-                          // await _authController.signUpUsers(
-                          //   context: context,
-                          //   email: email,
-                          //   fullName: fullName,
-                          //   password: password,
-                          // );
-                          // print(email);
-                          // print(fullName);
-                          // print(password);
+                          // If the form is valid, proceed with login
+                          await _authController.signInUsers(
+                            context: context,
+                            email: email,
+                            password: password,
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
