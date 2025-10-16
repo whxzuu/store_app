@@ -4,6 +4,12 @@ A new Flutter project.
 
 ## Getting Started
 
+### Folder store_app -> berisi coding frontend
+
+### Folder backend_api2 -> berisi coding backend nodejs/express
+
+### Database memakai MongoDB
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
