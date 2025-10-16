@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_app/controllers/auth_controller.dart';
 import 'package:store_app/views/screens/authentication_screens/register_screen.dart';
+import 'package:store_app/views/screens/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -270,6 +271,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             context: context,
                             email: email,
                             password: password,
+                          );
+                          // Navigate to home screen on success
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            ),
                           );
                         }
                       },
