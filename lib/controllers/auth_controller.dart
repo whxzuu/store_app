@@ -8,7 +8,6 @@ import 'package:store_app/services/manage_http_response.dart';
 import 'package:store_app/views/screens/home.dart';
 
 class AuthController {
-
   // SIGN UP USER
   //.................................................................
   Future<void> signUpUsers({
@@ -56,7 +55,6 @@ class AuthController {
     }
   }
 
-
   // SIGN IN USER
   //.................................................................
   Future<void> signInUsers({
@@ -85,12 +83,12 @@ class AuthController {
         onSuccess: () {
           // Handle successful response here
           showSnackBar(context, 'Login Success');
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
           );
+          showSnackBar(context, 'Logged In');
         },
       );
     } catch (e) {

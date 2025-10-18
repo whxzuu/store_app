@@ -24,26 +24,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  registerUser() async {
+  Future<void> registerUser() async {
     setState(() {
       _isLoading = true;
     });
-    await _authController
-        .signUpUsers(
-          context: context,
-          email: email,
-          fullName: fullName,
-          password: password,
-          state: state,
-          city: city,
-          birthDate: birthDate,
-        )
-        .whenComplete(() {
-          _formKey.currentState!.reset();
-          setState(() {
-            _isLoading = false;
-          });
-        });
+
+    await _authController.signUpUsers(
+      context: context,
+      email: email,
+      fullName: fullName,
+      password: password,
+      state: state,
+      city: city,
+      birthDate: birthDate,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   // Daftar domain email yang diizinkan
@@ -470,7 +468,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0),
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         // Proses Register
                         registerUser();
