@@ -22,7 +22,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late String city;
   late String birthDate;
   bool _obscurePassword = true;
-  
+  bool _isLoading = false;
+
+  registerUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await _authController
+        .signUpUsers(
+          context: context,
+          email: email,
+          fullName: fullName,
+          password: password,
+          state: state,
+          city: city,
+          birthDate: birthDate,
+        )
+        .whenComplete(() {
+          _formKey.currentState!.reset();
+          setState(() {
+            _isLoading = false;
+          });
+        });
+  }
+
   // Daftar domain email yang diizinkan
   final List<String> allowedEmailDomains = [
     'gmail.com',
@@ -443,56 +466,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 // Tombol untuk Register
-                if (MediaQuery.of(context).viewInsets.bottom == 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          // Proses Register
-                          await _authController.signUpUsers(
-                            context: context,
-                            email: email,
-                            fullName: fullName,
-                            password: password,
-                            state: state,
-                            city: city,
-                            birthDate: birthDate,
-                          );
-                        }
-                        Navigator.pop(context);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LoginScreen(),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6200EE),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: 10.0,
+                // if (MediaQuery.of(context).viewInsets.bottom == 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Proses Register
+                        registerUser();
+                      }
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
                         ),
-                        textStyle: GoogleFonts.getFont(
-                          'Nunito Sans',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6200EE),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                        vertical: 10.0,
                       ),
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
+                      textStyle: GoogleFonts.getFont(
+                        'Nunito Sans',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

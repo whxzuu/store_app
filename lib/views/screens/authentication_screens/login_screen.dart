@@ -17,7 +17,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final AuthController _authController = AuthController();
   late String email;
   late String password;
+  bool isLoading = false;
   bool _obscurePassword = true;
+
+  loginUser() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _authController.signInUsers(
+      context: context,
+      email: email,
+      password: password,
+    ).whenComplete((){
+      _formKey.currentState!.reset();
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   // Daftar domain email yang diizinkan
   final List<String> allowedEmailDomains = [
@@ -48,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!allowedEmailDomains.contains(domain)) {
       return 'Valid domain gmail.com, yahoo.com, atau hotmail.com';
     }
- 
+
     return null; // valid
   }
 
@@ -251,45 +268,41 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 // TOMBOL UNTUK LOGIN/SIGN IN
                 // if (MediaQuery.of(context).viewInsets.bottom == 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: ElevatedButton(
-                      // Proses login
-                      onPressed: () async{
-                        if (_formKey.currentState!.validate()) {
-                          // If the form is valid, proceed with login
-                          await _authController.signInUsers(
-                            context: context,
-                            email: email,
-                            password: password,
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6200EE),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30.0,
-                          vertical: 10.0,
-                        ),
-                        textStyle: GoogleFonts.getFont(
-                          'Nunito Sans',
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: ElevatedButton(
+                    // Proses login
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // If the form is valid, proceed with login
+                        loginUser();
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6200EE),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30.0,
+                        vertical: 10.0,
                       ),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
+                      textStyle: GoogleFonts.getFont(
+                        'Nunito Sans',
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    child: isLoading ? const CircularProgressIndicator(color: Colors.white) : Text(
+                      'Sign In',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
                       ),
                     ),
                   ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

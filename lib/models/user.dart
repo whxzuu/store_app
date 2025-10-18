@@ -8,8 +8,8 @@ class User {
   final String email;
   final String state;
   final String city;
-
   final String password;
+  final String token;
 
   User({
     required this.id,
@@ -19,6 +19,7 @@ class User {
     required this.city,
     required this.password,
     required this.birthDate,
+    required this.token,
   });
 
   // serialization: convert User object to Map
@@ -36,6 +37,7 @@ class User {
       'city': city,
       'password': password,
       'birthDate': birthDate,
+      'token': token,
     };
   }
 
@@ -70,6 +72,7 @@ class User {
       city: map['city'] as String? ?? '',
       password: map['password'] as String? ?? '',
       birthDate: map['birthDate'] as String? ?? '',
+      token: map['token'] as String? ?? '',
     );
   }
 

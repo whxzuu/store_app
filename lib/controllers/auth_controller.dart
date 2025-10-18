@@ -30,6 +30,7 @@ class AuthController {
         city: city,
         password: password,
         birthDate: birthDate,
+        token: '',
       );
       http.Response response = await http.post(
         Uri.parse('$uri/api/signup'), // use the global uri variable
