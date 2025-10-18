@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_app/controllers/auth_controller.dart';
+import 'package:store_app/views/screens/authentication_screens/forgot_password.dart';
 import 'package:store_app/views/screens/authentication_screens/register_screen.dart';
-import 'package:store_app/views/screens/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -142,20 +142,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       email = value;
                     },
                     validator: validateEmail,
-
-                    // Validasi input email
-                    // validator: (value) {
-                    //   if (value == null || value.isEmpty) {
-                    //     return 'Please enter your email';
-                    //   }
-                    //   if (!RegExp(
-                    //     r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                    //   ).hasMatch(value)) {
-                    //     return 'Please enter a valid email address with @ domain';
-                    //   }
-                    //   // Add more validation logic if needed
-                    //   return null;
-                    // },
                   ),
                 ),
                 // Tampilan untuk input Full Name and Password
@@ -245,7 +231,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      // Navigate to forgot password screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ForgotPassword(),
+                        ),
+                      );
                     },
                     child: Text(
                       'Forgot Password?',
@@ -259,7 +250,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 // TOMBOL UNTUK LOGIN/SIGN IN
-                if (MediaQuery.of(context).viewInsets.bottom == 0)
+                // if (MediaQuery.of(context).viewInsets.bottom == 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
@@ -271,13 +262,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             context: context,
                             email: email,
                             password: password,
-                          );
-                          // Navigate to home screen on success
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
                           );
                         }
                       },

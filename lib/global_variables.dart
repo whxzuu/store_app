@@ -1,1 +1,1 @@
-String uri = "http://10.139.125.96:3333"; // local IP address of the server
+String uri = "http://10.139.84.242:3333"; // local IP address of the server

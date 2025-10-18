@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:store_app/global_variables.dart';
 import 'package:store_app/models/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:store_app/services/manage_http_response.dart';
+import 'package:store_app/views/screens/home.dart';
 
 class AuthController {
 
@@ -49,7 +51,7 @@ class AuthController {
     } catch (e) {
       // Handle errors here
       // ignore: avoid_print
-      print('Error signing up user: $e');
+      print('Error: $e');
     }
   }
 
@@ -82,6 +84,12 @@ class AuthController {
         onSuccess: () {
           // Handle successful response here
           showSnackBar(context, 'Login Success');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const HomeScreen(),
+            ),
+          );
         },
       );
     } catch (e) {
